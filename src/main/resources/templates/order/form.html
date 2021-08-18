@@ -1,0 +1,45 @@
+<html>
+<head th:replace="~{base :: head}"/>
+<body>
+    <div th:replace="~{base :: logo}"/>
+    <div class="container">
+        <div th:replace="~{base :: title('Novo Pedido')}"/>
+        <div class="card mt-3">
+            <form th:object="${newOrderRequest}" th:action="@{/order/new}" class="card-body" method="POST">
+                <div class="form-group">
+                    <label for="productName">Produto</label>
+                    <input th:field="*{productName}" th:errorclass="is-invalid" class="form-control" placeholder="nome do produto"/>
+                    <small>Informa qual o nome do produto.</small>
+                    <div class="invalid-feedback" th:errors="*{productName}">
+                        ERROR MESSAGE
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="productUrl">Url</label>
+                    <input th:field="*{productUrl}" th:errorclass="is-invalid" class="form-control" placeholder="url do produto"/>
+                    <small>Procure em um site o produto que você deseja e cole a url da página aqui.</small>
+                    <div class="invalid-feedback" th:errors="*{productUrl}">
+                        ERROR MESSAGE
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="imageUrl">Imagem</label>
+                    <input th:field="*{imageUrl}" th:errorclass="is-invalid" class="form-control" placeholder="url da imagem"/>
+                    <small>Copie a url de uma boa imagem do produto e cole aqui para ajudar a conseguir compradores.</small>
+                    <div class="invalid-feedback" th:errors="*{imageUrl}">
+                        ERROR MESSAGE
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="description">Descrição</label>
+                    <textarea th:field="*{description}" th:errorclass="is-invalid" class="form-control" placeholder="Adicione detalhes importantes para ajudar o comprador."></textarea>
+                    <div class="invalid-feedback" th:errors="*{description}">
+                        ERROR MESSAGE
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Cadastrar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
