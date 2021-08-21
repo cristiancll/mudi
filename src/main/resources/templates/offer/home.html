@@ -1,0 +1,103 @@
+<html>
+<head th:replace="~{base :: head}"/>
+
+<body onload="onLoad()">
+<div th:replace="~{base :: logo}"/>
+<div class="container" id="offers">
+    <div th:replace="~{base :: title('Ofertas')}"/>
+    <div class="card mb-3" v-for="o in offers">
+        <div class="card-header alert-dark">{{o.productName}}</div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-sm-8 mb-3">
+                    <div>Produto</div>
+                    <div><a v-bind:href="o.productUrl">{{o.productName}}</a></div>
+                    <div>Descrição</div>
+                    <div>
+                        <textarea disabled class="form-control">{{o.description}}</textarea>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-5">
+                            Valor: <input v-bind:class="{'is-invalid':o.errors.value !==''}" class="form-control" v-model="o.value"/>
+                            <div v-if="o.errors.value" class="invalid-feedback" >
+                                {{o.errors.value}}
+                            </div>
+                        </div>
+                        <div class="col-md-7">
+                            Data da entrega: <input v-bind:class="{'is-invalid':o.errors.deliveryDate !==''}" class="form-control" v-model="o.deliveryDate"/>
+                            <div v-if="o.errors.deliveryDate" class="invalid-feedback">
+                                {{o.errors.deliveryDate}}
+                            </div>
+                        </div>
+<!--                        <div class="col-md-5">-->
+<!--                            Valor: <input class="form-control" v-model="o.value"/>-->
+<!--                        </div>-->
+<!--                        <div class="col-md-7">-->
+<!--                            Data da entrega: <input class="form-control" v-model="o.deliveryDate"/>-->
+<!--                        </div>-->
+                    </div>
+                    <div class="mt-2">
+                        <label for="comment">Comentário</label>
+                        <textarea id="comment" class="form-control" v-model="o.comment"></textarea>
+                    </div>
+                    <button v-if="o.offerSent" class="btn btn-success mt-2">Oferta Enviada</button>
+                    <button v-else v-on:click="createOffer(o)" class="btn btn-primary mt-2">Enviar Oferta</button>
+                </div>
+                <div class="col-12 col-sm-4">
+                    <div>
+                        <img class="img-thumbnail" v-bind:src="o.imageUrl"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    function onLoad() {
+        var app = new Vue({
+            el: '#offers',
+            data: {
+                offers: []
+            },
+            mounted() {
+                axios
+                .get('http://localhost:8080/api/orders/waiting')
+                .then(response => {
+                        response.data.forEach(pedido =>{
+                            pedido.offerSent = false;
+                            pedido.errors = {
+                                value: '',
+                                deliveryDate: ''
+                            }
+                        });
+                        this.offers = response.data;
+                    }
+                )
+            },
+            methods: {
+                createOffer: function(o){
+                    o.errors = {
+                        value: '',
+                        deliveryDate: ''
+                    };
+                    axios.post('http://localhost:8080/api/offers', {
+                        orderId: o.id, 
+                        value: o.value,
+                        deliveryDate: o.deliveryDate, 
+                        comment:  o.comment,
+                    }).then(response => o.offerSent = true)
+                    .catch(error => {
+                        error.response.data.errors.forEach(error => {
+                           o.errors[error.field] = error.defaultMessage; 
+                        });
+                    });
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

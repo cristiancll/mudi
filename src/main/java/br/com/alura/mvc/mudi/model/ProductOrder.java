@@ -1,8 +1,11 @@
 package br.com.alura.mvc.mudi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class ProductOrder {
@@ -18,19 +21,17 @@ public class ProductOrder {
     private String productUrl;
     private String imageUrl;
     private String description;
+    
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Offer> offers;
 
     public Long getId() {
         return id;
@@ -38,14 +39,6 @@ public class ProductOrder {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
     }
 
     public String getProductName() {
@@ -94,5 +87,29 @@ public class ProductOrder {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Offer> getOffers() {
+        return offers;
+    }
+
+    public void setOffers(List<Offer> offers) {
+        this.offers = offers;
     }
 }
